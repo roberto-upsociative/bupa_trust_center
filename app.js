@@ -85,9 +85,11 @@
       trustCenter.setAttribute("portalId", config.portalId);
       trustCenter.setAttribute("blobUrl", config.blobUrl);
       trustCenter.setAttribute("workerUrl", config.workerUrl || "https://portal-api.onetrust.com");
-      host.append(trustCenter);
+      // Make the host visible at its final width before the SDK initializes
+      // the custom element and measures its responsive layout.
       section.hidden = false;
       card.classList.add("card--trust-open");
+      host.append(trustCenter);
       showStatus("Trust Center carregado.", "success");
     } catch (error) {
       showStatus(error.message || "Não foi possível acessar o Trust Center.", "error");
