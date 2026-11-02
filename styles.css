@@ -9,7 +9,6 @@ body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 50% 
 .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; color: white; background: #244bb8; border-radius: 11px; font-size: 18px; }
 .environment { border: 1px solid #cbd8f3; color: #3355a2; border-radius: 999px; padding: 7px 11px; font-size: 10px; letter-spacing: 1px; font-weight: 700; }
 .card { width: min(100%, 620px); margin: 62px auto 48px; padding: 48px; background: #fff; border: 1px solid #e7ebf2; border-radius: 18px; box-shadow: 0 16px 50px #1c33520d; }
-.card--trust-open { width: 100%; max-width: 1360px; padding: clamp(28px, 4vw, 52px); }
 .eyebrow { color: #5571ae; font-size: 10px; line-height: 1.4; letter-spacing: 1.5px; font-weight: 700; }
 h1, h2 { margin: 12px 0 0; font-family: Manrope, sans-serif; letter-spacing: -1.2px; color: #17243a; }
 h1 { max-width: 480px; font-size: clamp(27px, 4vw, 35px); line-height: 1.2; }
@@ -25,23 +24,34 @@ input:focus { border-color: #5477d0; box-shadow: 0 0 0 3px #5477d01a; }
 .status { min-height: 22px; margin-top: 14px; color: #657187; font-size: 13px; line-height: 1.5; }
 .status[data-kind="error"] { color: #a52e3a; }
 .status[data-kind="success"] { color: #23724e; }
-.trust-section { margin-top: 32px; padding-top: 28px; border-top: 1px solid #edf0f5; }
-.trust-section[hidden] { display: none; }
-#trust-center-host { width: 100%; min-width: 0; margin-top: 24px; min-height: 120px; overflow-x: auto; overscroll-behavior-inline: contain; }
+#trust-center-host { width: 100%; min-width: 0; margin-top: 18px; min-height: 120px; overflow-x: auto; overscroll-behavior-inline: contain; }
 #trust-center-host trust-center { display: block; width: 100%; min-width: 0; }
 .privacy-note { margin: 27px 0 0; padding-top: 18px; border-top: 1px solid #edf0f5; color: #8992a2; font-size: 11px; line-height: 1.5; }
 footer { margin-top: auto; padding: 0 0 28px; text-align: center; color: #99a2b1; font-size: 11px; }
 @media (max-width: 900px) {
   .shell { width: min(100% - 32px, 1440px); }
   .card { margin: 38px auto; }
-  .card--trust-open { width: 100%; padding: 32px; }
-  .trust-section { margin-top: 26px; padding-top: 24px; }
 }
 @media (max-width: 600px) {
   .shell { width: min(100% - 24px, 1440px); }
   .topbar { height: 70px; }
   .card { margin: 24px auto; padding: 28px 22px; border-radius: 14px; }
-  .card--trust-open { padding: 24px 16px; }
-  .trust-section { margin-top: 22px; padding-top: 20px; }
-  #trust-center-host { margin-top: 18px; }
+}
+
+.trust-page { background: #f5f7fb; }
+.trust-shell { width: min(100% - 48px, 1600px); min-height: 100vh; margin: 0 auto; display: flex; flex-direction: column; }
+.trust-topbar { flex: 0 0 76px; }
+.back-link { color: #244bb8; font-size: 13px; font-weight: 600; text-decoration: none; }
+.back-link:hover { text-decoration: underline; }
+.trust-panel { flex: 1; min-width: 0; margin: 0 0 32px; padding: clamp(22px, 3vw, 40px); background: #fff; border: 1px solid #e7ebf2; border-radius: 18px; box-shadow: 0 16px 50px #1c33520d; }
+.trust-heading { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-bottom: 22px; border-bottom: 1px solid #edf0f5; }
+.trust-heading h1 { margin-top: 8px; font-size: clamp(23px, 3vw, 30px); }
+.trust-panel #trust-status { margin-top: 12px; }
+.trust-panel #trust-center-host { min-height: max(70vh, 600px); margin-top: 12px; }
+@media (max-width: 700px) {
+  .trust-shell { width: min(100% - 20px, 1600px); }
+  .trust-topbar { flex-basis: 64px; }
+  .trust-panel { padding: 20px 14px; border-radius: 12px; }
+  .trust-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .trust-panel #trust-center-host { min-height: 70vh; }
 }

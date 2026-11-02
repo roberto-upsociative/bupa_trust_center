@@ -1,6 +1,6 @@
 # Trust Center — homologação
 
-Página estática para capturar o RUT e abrir um Trust Center OneTrust embutido na própria página.
+Aplicação com duas telas: `index.html` captura o RUT e, após emitir o JWT, abre `trust.html`, que apresenta o Trust Center em uma página separada e ampla.
 
 ## Executar localmente com Node.js
 
@@ -25,7 +25,7 @@ A aplicação usa arquivos estáticos na raiz e uma Vercel Function em `api/onet
 
 Não publique a chave em Git nem em variáveis `NEXT_PUBLIC_*`/`VITE_*`; ela precisa ficar somente no ambiente do servidor. A chave privada correspondente deve estar cadastrada/correlacionada à chave pública no OneTrust.
 
-O RUT digitado é guardado no `localStorage` do navegador sob a chave `trust-center-rut`. Esta página não valida o formato do RUT. O endpoint de demonstração apenas assina o identificador recebido: não comprova que a pessoa que o digitou é titular daquele RUT. Use somente no fluxo simulado de homologação; a autenticação real depende do mecanismo de identidade da aplicação.
+O RUT digitado é guardado no `localStorage` do navegador sob a chave `trust-center-rut`; o JWT fica no `sessionStorage` da aba atual para a navegação entre as telas. A aplicação não valida o formato do RUT. O endpoint de demonstração apenas assina o identificador recebido: não comprova que a pessoa que o digitou é titular daquele RUT. Use somente no fluxo simulado de homologação; a autenticação real depende do mecanismo de identidade da aplicação.
 
 ## Referência oficial
 

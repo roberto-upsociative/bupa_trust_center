@@ -1,24 +1,7 @@
 (() => {
   const config = window.APP_CONFIG || {};
-  const form = document.querySelector("#rut-form");
-  const rutInput = document.querySelector("#rut");
-  const status = document.querySelector("#status");
-  const section = document.querySelector("#trust-section");
-  const host = document.querySelector("#trust-center-host");
-  const card = section.closest(".card");
   const storageKey = "trust-center-rut";
-
-  rutInput.value = localStorage.getItem(storageKey) || "";
-
-  function showStatus(message, kind = "info") {
-    status.textContent = message;
-    status.dataset.kind = kind;
-  }
-
-  function missingConfiguration() {
-    const required = ["tenantId", "portalId", "blobUrl", "tokenEndpoint"];
-    return required.filter((key) => !String(config[key] || "").trim());
-  }
+  const authStorageKey = "trust-center-auth";
 
   function loadTrustCenterSdk(blobUrl) {
     return new Promise((resolve, reject) => {
@@ -41,60 +24,93 @@
     });
   }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const rut = rutInput.value.trim();
-    if (!rut) {
-      showStatus("Informe seu RUT para continuar.", "error");
-      return;
+  const form = document.querySelector("#rut-form");
+  if (form) {
+    const rutInput = document.querySelector("#rut");
+    const status = document.querySelector("#status");
+    rutInput.value = localStorage.getItem(storageKey) || "";
+
+    function showStatus(message, kind = "info") {
+      status.textContent = message;
+      status.dataset.kind = kind;
     }
 
-    localStorage.setItem(storageKey, rut);
-    section.hidden = true;
-    card.classList.remove("card--trust-open");
-    host.replaceChildren();
-
-    const missing = missingConfiguration();
-    if (missing.length) {
-      showStatus(`RUT armazenado. Configure no config.js: ${missing.join(", ")}.`, "error");
-      return;
-    }
-
-    showStatus("Conectando ao Trust Center…");
-    const button = form.querySelector("button[type=submit]");
-    button.disabled = true;
-    try {
-      const response = await fetch(config.tokenEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: rut })
-      });
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error || `O serviço de autenticação respondeu com HTTP ${response.status}.`);
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const rut = rutInput.value.trim();
+      if (!rut) {
+        showStatus("Informe seu RUT para continuar.", "error");
+        return;
       }
-      if (!result.token) throw new Error("O serviço de autenticação não retornou o JWT esperado.");
 
-      window.OneTrust = {
-        dataSubjectParams: { id: rut, isAnonymous: false, token: result.token }
-      };
-      await loadTrustCenterSdk(config.blobUrl);
+      localStorage.setItem(storageKey, rut);
+      const required = ["tenantId", "portalId", "blobUrl", "tokenEndpoint"];
+      const missing = required.filter((key) => !String(config[key] || "").trim());
+      if (missing.length) {
+        showStatus(`Configure no config.js: ${missing.join(", ")}.`, "error");
+        return;
+      }
 
-      const trustCenter = document.createElement("trust-center");
-      trustCenter.setAttribute("tenantId", config.tenantId);
-      trustCenter.setAttribute("portalId", config.portalId);
-      trustCenter.setAttribute("blobUrl", config.blobUrl);
-      trustCenter.setAttribute("workerUrl", config.workerUrl || "https://portal-api.onetrust.com");
-      // Make the host visible at its final width before the SDK initializes
-      // the custom element and measures its responsive layout.
-      section.hidden = false;
-      card.classList.add("card--trust-open");
-      host.append(trustCenter);
-      showStatus("Trust Center carregado.", "success");
-    } catch (error) {
-      showStatus(error.message || "Não foi possível acessar o Trust Center.", "error");
-    } finally {
-      button.disabled = false;
-    }
+      showStatus("Conectando ao Trust Center…");
+      const button = form.querySelector("button[type=submit]");
+      button.disabled = true;
+      try {
+        const response = await fetch(config.tokenEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: rut })
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.error || `O serviço de autenticação respondeu com HTTP ${response.status}.`);
+        }
+        if (!result.token) throw new Error("O serviço de autenticação não retornou o JWT esperado.");
+
+        sessionStorage.setItem(authStorageKey, JSON.stringify({ id: rut, token: result.token }));
+        window.location.assign("trust.html");
+      } catch (error) {
+        showStatus(error.message || "Não foi possível acessar o Trust Center.", "error");
+      } finally {
+        button.disabled = false;
+      }
+    });
+    return;
+  }
+
+  const trustStatus = document.querySelector("#trust-status");
+  const trustHost = document.querySelector("#trust-center-host");
+  if (!trustStatus || !trustHost) return;
+
+  const savedAuth = sessionStorage.getItem(authStorageKey);
+  if (!savedAuth) {
+    window.location.replace("index.html");
+    return;
+  }
+
+  const backLink = document.querySelector("#change-rut");
+  backLink?.addEventListener("click", () => sessionStorage.removeItem(authStorageKey));
+
+  async function renderTrustCenter() {
+    const auth = JSON.parse(savedAuth);
+    if (!auth.id || !auth.token) throw new Error("Sessão inválida. Informe seu RUT novamente.");
+
+    window.OneTrust = {
+      dataSubjectParams: { id: auth.id, isAnonymous: false, token: auth.token }
+    };
+    await loadTrustCenterSdk(config.blobUrl);
+
+    const trustCenter = document.createElement("trust-center");
+    trustCenter.setAttribute("tenantId", config.tenantId);
+    trustCenter.setAttribute("portalId", config.portalId);
+    trustCenter.setAttribute("blobUrl", config.blobUrl);
+    trustCenter.setAttribute("workerUrl", config.workerUrl || "https://portal-api.onetrust.com");
+    trustHost.append(trustCenter);
+    trustStatus.textContent = "Trust Center carregado.";
+    trustStatus.dataset.kind = "success";
+  }
+
+  renderTrustCenter().catch((error) => {
+    trustStatus.textContent = error.message || "Não foi possível carregar o Trust Center.";
+    trustStatus.dataset.kind = "error";
   });
 })();
