@@ -7,7 +7,7 @@ function base64Url(value) {
 function createOneTrustToken(subject) {
   const privateKey = (process.env.ONETRUST_PRIVATE_KEY || "").replace(/\\n/g, "\n");
   if (!privateKey.trim() || !/-----BEGIN (?:RSA )?PRIVATE KEY-----/.test(privateKey)) {
-    const error = new Error("A valid ONETRUST_PRIVATE_KEY is not configured.");
+    const error = new Error("La variable ONETRUST_PRIVATE_KEY no está configurada correctamente.");
     error.statusCode = 503;
     throw error;
   }
@@ -25,22 +25,22 @@ module.exports = (request, response) => {
 
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
-    return response.status(405).json({ error: "Method not allowed." });
+    return response.status(405).json({ error: "Método no permitido." });
   }
 
   if (!request.headers["content-type"]?.includes("application/json")) {
-    return response.status(415).json({ error: "Content-Type must be application/json." });
+    return response.status(415).json({ error: "El encabezado Content-Type debe ser application/json." });
   }
 
   const id = typeof request.body?.id === "string" ? request.body.id.trim() : "";
-  if (!id) return response.status(400).json({ error: "A non-empty id is required." });
+  if (!id) return response.status(400).json({ error: "El RUT es obligatorio." });
 
   try {
     return response.status(200).json({ token: createOneTrustToken(id) });
   } catch (error) {
-    console.error("Failed to issue OneTrust token:", error.message);
+    console.error("No se pudo generar el token de OneTrust:", error.message);
     return response.status(error.statusCode || 500).json({
-      error: error.statusCode ? error.message : "Unable to issue OneTrust token. Check the server logs."
+      error: error.statusCode ? error.message : "No se pudo generar el token de OneTrust. Revisa los registros del servidor."
     });
   }
 };

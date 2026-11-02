@@ -49,12 +49,12 @@ function base64Url(value) {
 function createOneTrustToken(subject) {
   const privateKey = (process.env.ONETRUST_PRIVATE_KEY || "").replace(/\\n/g, "\n");
   if (!privateKey.trim()) {
-    const error = new Error("JWT signing key is not configured.");
+    const error = new Error("La clave privada para firmar el JWT no está configurada.");
     error.statusCode = 503;
     throw error;
   }
   if (!/-----BEGIN (?:RSA )?PRIVATE KEY-----/.test(privateKey)) {
-    const error = new Error("A private PEM key is required to sign OneTrust tokens.");
+    const error = new Error("Se requiere una clave privada PEM para firmar los tokens de OneTrust.");
     error.statusCode = 503;
     throw error;
   }
@@ -72,7 +72,7 @@ async function readJson(request) {
   for await (const chunk of request) {
     raw += chunk;
     if (raw.length > 4096) {
-      const error = new Error("Request body too large.");
+      const error = new Error("El cuerpo de la solicitud es demasiado grande.");
       error.statusCode = 413;
       throw error;
     }
@@ -80,7 +80,7 @@ async function readJson(request) {
   try {
     return JSON.parse(raw || "{}");
   } catch {
-    const error = new Error("Invalid JSON request body.");
+    const error = new Error("El cuerpo de la solicitud no contiene un JSON válido.");
     error.statusCode = 400;
     throw error;
   }
@@ -92,39 +92,39 @@ const server = http.createServer(async (request, response) => {
   if (request.method === "POST" && requestUrl.pathname === "/api/onetrust/token") {
     try {
       if (!request.headers["content-type"]?.includes("application/json")) {
-        return sendJson(response, 415, { error: "Content-Type must be application/json." });
+        return sendJson(response, 415, { error: "El encabezado Content-Type debe ser application/json." });
       }
       const body = await readJson(request);
       const id = typeof body.id === "string" ? body.id.trim() : "";
-      if (!id) return sendJson(response, 400, { error: "A non-empty id is required." });
+      if (!id) return sendJson(response, 400, { error: "El RUT es obligatorio." });
 
-      // Este fluxo é apenas para homologação: o endpoint assina o RUT informado,
-      // mas não comprova a identidade de quem o digitou.
+      // Este flujo es solo para pruebas: el endpoint firma el RUT proporcionado,
+      // pero no verifica la identidad de quien lo ingresó.
       return sendJson(response, 200, { token: createOneTrustToken(id) });
     } catch (error) {
       const status = error.statusCode || 500;
       const message = status === 500
-        ? "Unable to issue OneTrust token. Check the server signing key."
+        ? "No se pudo generar el token de OneTrust. Revisa la clave privada del servidor."
         : error.message;
       return sendJson(response, status, { error: message });
     }
   }
 
   if (request.method !== "GET" && request.method !== "HEAD") {
-    return sendJson(response, 405, { error: "Method not allowed." });
+    return sendJson(response, 405, { error: "Método no permitido." });
   }
 
   const pathname = requestUrl.pathname === "/" ? "/index.html" : decodeURIComponent(requestUrl.pathname);
   const filePath = path.resolve(root, `.${pathname}`);
   if (!filePath.startsWith(`${root}${path.sep}`)) {
     response.writeHead(403);
-    return response.end("Forbidden");
+      return response.end("Acceso denegado");
   }
 
   fs.readFile(filePath, (error, data) => {
     if (error) {
       response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-      return response.end("Not found");
+      return response.end("Página no encontrada");
     }
     response.writeHead(200, {
       "Content-Type": mimeTypes[path.extname(filePath)] || "application/octet-stream",
@@ -136,5 +136,5 @@ const server = http.createServer(async (request, response) => {
 });
 
 server.listen(port, "0.0.0.0", () => {
-  console.log(`Homologation app listening on port ${port}`);
+  console.log(`Aplicación de pruebas escuchando en el puerto ${port}`);
 });

@@ -19,7 +19,7 @@
       script.src = src;
       script.type = "text/javascript";
       script.onload = resolve;
-      script.onerror = () => reject(new Error("Não foi possível carregar o SDK do Trust Center."));
+      script.onerror = () => reject(new Error("No fue posible cargar el SDK de Trust Center."));
       document.body.append(script);
     });
   }
@@ -39,7 +39,7 @@
       event.preventDefault();
       const rut = rutInput.value.trim();
       if (!rut) {
-        showStatus("Informe seu RUT para continuar.", "error");
+        showStatus("Ingresa tu RUT para continuar.", "error");
         return;
       }
 
@@ -47,11 +47,11 @@
       const required = ["tenantId", "portalId", "blobUrl", "tokenEndpoint"];
       const missing = required.filter((key) => !String(config[key] || "").trim());
       if (missing.length) {
-        showStatus(`Configure no config.js: ${missing.join(", ")}.`, "error");
+        showStatus(`Configura estos valores en config.js: ${missing.join(", ")}.`, "error");
         return;
       }
 
-      showStatus("Conectando ao Trust Center…");
+      showStatus("Conectando con Trust Center…");
       const button = form.querySelector("button[type=submit]");
       button.disabled = true;
       try {
@@ -62,14 +62,14 @@
         });
         const result = await response.json();
         if (!response.ok) {
-          throw new Error(result.error || `O serviço de autenticação respondeu com HTTP ${response.status}.`);
+          throw new Error(result.error || `El servicio de autenticación respondió con HTTP ${response.status}.`);
         }
-        if (!result.token) throw new Error("O serviço de autenticação não retornou o JWT esperado.");
+        if (!result.token) throw new Error("El servicio de autenticación no devolvió el JWT esperado.");
 
         sessionStorage.setItem(authStorageKey, JSON.stringify({ id: rut, token: result.token }));
         window.location.assign("trust.html");
       } catch (error) {
-        showStatus(error.message || "Não foi possível acessar o Trust Center.", "error");
+        showStatus(error.message || "No fue posible acceder a Trust Center.", "error");
       } finally {
         button.disabled = false;
       }
@@ -92,7 +92,7 @@
 
   async function renderTrustCenter() {
     const auth = JSON.parse(savedAuth);
-    if (!auth.id || !auth.token) throw new Error("Sessão inválida. Informe seu RUT novamente.");
+    if (!auth.id || !auth.token) throw new Error("La sesión no es válida. Ingresa tu RUT nuevamente.");
 
     window.OneTrust = {
       dataSubjectParams: { id: auth.id, isAnonymous: false, token: auth.token }
@@ -105,12 +105,12 @@
     trustCenter.setAttribute("blobUrl", config.blobUrl);
     trustCenter.setAttribute("workerUrl", config.workerUrl || "https://portal-api.onetrust.com");
     trustHost.append(trustCenter);
-    trustStatus.textContent = "Trust Center carregado.";
+    trustStatus.textContent = "Trust Center listo.";
     trustStatus.dataset.kind = "success";
   }
 
   renderTrustCenter().catch((error) => {
-    trustStatus.textContent = error.message || "Não foi possível carregar o Trust Center.";
+    trustStatus.textContent = error.message || "No fue posible cargar Trust Center.";
     trustStatus.dataset.kind = "error";
   });
 })();

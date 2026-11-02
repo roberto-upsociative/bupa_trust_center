@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
 
 :root { font-size: 14px; color-scheme: light; font-family: 'DM Sans', sans-serif; color: #17243a; background: #f5f7fb; font-synthesis: none; }
+.trust-document { font-size: 12px; line-height: 1.4; }
 * { box-sizing: border-box; }
 body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 50% 0%, #e8f0ff 0, #f5f7fb 53%); }
 .shell { width: min(100% - 40px, 1440px); margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }

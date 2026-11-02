@@ -1,35 +1,32 @@
-# Trust Center — homologação
+# Trust Center — pruebas
 
-Aplicação com duas telas: `index.html` captura o RUT e, após emitir o JWT, abre `trust.html`, que apresenta o Trust Center em uma página separada e ampla.
+Aplicación de dos pantallas: `index.html` solicita el RUT y, después de emitir el JWT, abre `trust.html`, donde se muestra el Trust Center en una página independiente y amplia.
 
-## Executar localmente com Node.js
+## Ejecución local con Node.js
 
-Os valores do tenant de homologação já estão em `config.js`. Para executar a aplicação:
+Los datos del tenant de pruebas ya están en `config.js`.
 
-1. Configure no ambiente do servidor `ONETRUST_PRIVATE_KEY` com a chave privada correspondente à chave pública cadastrada no OneTrust. Consulte `.env.example` para o formato. Não coloque essa chave em `config.js`, no HTML ou no navegador.
-2. Execute `node server.js` e abra `http://localhost:3000`.
+1. Configura `ONETRUST_PRIVATE_KEY` en el entorno del servidor. Debe ser la clave privada correspondiente a la clave pública registrada en OneTrust. Consulta `.env.example` para ver el formato. No incluyas la clave en `config.js`, HTML ni en el navegador.
+2. Ejecuta `node server.js` y abre `http://localhost:3000`.
 
-O endpoint implementado `POST /api/onetrust/token` recebe JSON `{ "id": "<RUT>" }` e responde `{ "token": "<JWT>" }`. O JWT usa assinatura RS256, inclui `sub` igual ao RUT e expira em cinco minutos. A documentação exige que `sub` corresponda ao identificador do titular e que a chave de verificação esteja cadastrada no OneTrust. A chave pública que você compartilhou não pode ser usada para assinar o token; o servidor precisa da chave privada correspondente.
+El endpoint `POST /api/onetrust/token` recibe JSON `{ "id": "<RUT>" }` y responde `{ "token": "<JWT>" }`. El JWT se firma con RS256, incluye `sub` con el RUT y vence en cinco minutos. La clave pública registrada en OneTrust debe corresponder a la clave privada del servidor.
 
-`tenantId`, `portalId`, `blobUrl`, `workerUrl` e o endpoint já estão configurados em `config.js`. Se a aplicação usar outro backend, altere `tokenEndpoint` para sua URL.
+Los valores de `tenantId`, `portalId`, `blobUrl`, `workerUrl` y la ruta del endpoint ya están configurados en `config.js`. Si utilizas otro backend, cambia `tokenEndpoint`.
 
-## Testar na Vercel
+## Pruebas en Vercel
 
-A aplicação usa arquivos estáticos na raiz e uma Vercel Function em `api/onetrust/token.js`. A Vercel publica essa função automaticamente em `POST /api/onetrust/token`; `server.js` continua servindo apenas para execução local com Node.js.
+Los archivos estáticos están en la raíz del proyecto y la función de Vercel está en `api/onetrust/token.js`. Vercel publica esa función en `POST /api/onetrust/token`. `server.js` se usa para ejecutar la aplicación localmente con Node.js.
 
-1. Envie este projeto para um repositório Git e importe o repositório no painel da Vercel. Não configure um framework nem uma pasta de saída de build; a página estática fica na raiz.
-2. Nas configurações do projeto Vercel, adicione `ONETRUST_PRIVATE_KEY` como variável de ambiente para Preview (e Development, se for usar `vercel dev`). Cole o conteúdo da chave privada PEM correspondente à chave pública cadastrada no OneTrust. Não use a chave pública e não coloque a chave em `config.js`.
-3. Faça o deploy de Preview e abra a URL gerada. `config.js` já aponta para `/api/onetrust/token`, então a página e a função usam o mesmo domínio.
-4. Para executar com o ambiente Vercel localmente, instale o CLI com `npm i -g vercel`, autentique com `vercel login`, vincule o diretório com `vercel link` e execute `vercel dev`. Configure a variável `ONETRUST_PRIVATE_KEY` no projeto Vercel no ambiente Development; `vercel dev` carrega essas variáveis vinculadas.
-5. Envie um RUT de homologação e confira as requisições em DevTools → Network. A rota deve responder HTTP 200 com `{ "token": "..." }`. Se retornar 503, a chave privada não está configurada ou não é PEM válido; se o token sair com 200 e a área continuar vazia, investigue as requisições do SDK ao OneTrust.
+1. Envía el proyecto a un repositorio Git e impórtalo en Vercel. No selecciones un framework ni una carpeta de salida de build; la página estática está en la raíz.
+2. En la configuración del proyecto Vercel, agrega `ONETRUST_PRIVATE_KEY` como variable de entorno para Preview y, si usarás `vercel dev`, también para Development. Pega el contenido de la clave privada PEM correspondiente a la clave pública registrada en OneTrust.
+3. Haz un deploy de Preview y abre la URL generada. `config.js` apunta a `/api/onetrust/token`, por lo que la página y la función usan el mismo dominio.
+4. Para ejecutar localmente con el entorno Vercel, instala el CLI con `npm i -g vercel`, autentícate con `vercel login`, vincula el directorio con `vercel link` y ejecuta `vercel dev`. Configura la variable `ONETRUST_PRIVATE_KEY` para el entorno Development del proyecto.
+5. Ingresa un RUT de pruebas y revisa las solicitudes en DevTools → Network. La ruta debe responder HTTP 200 con `{ "token": "..." }`. Un error 503 indica que la clave privada no está configurada o no es un PEM válido. Si el token responde 200 y el Trust Center no carga, revisa las solicitudes del SDK a OneTrust.
 
-Não publique a chave em Git nem em variáveis `NEXT_PUBLIC_*`/`VITE_*`; ela precisa ficar somente no ambiente do servidor. A chave privada correspondente deve estar cadastrada/correlacionada à chave pública no OneTrust.
+No publiques la clave en Git ni en variables `NEXT_PUBLIC_*` o `VITE_*`; debe permanecer solo en el entorno del servidor. El endpoint de pruebas firma el identificador recibido, pero no verifica que quien lo ingresa sea su titular. La autenticación real depende del mecanismo de identidad de la aplicación.
 
-O RUT digitado é guardado no `localStorage` do navegador sob a chave `trust-center-rut`; o JWT fica no `sessionStorage` da aba atual para a navegação entre as telas. A aplicação não valida o formato do RUT. O endpoint de demonstração apenas assina o identificador recebido: não comprova que a pessoa que o digitou é titular daquele RUT. Use somente no fluxo simulado de homologação; a autenticação real depende do mecanismo de identidade da aplicação.
+El RUT se guarda en el `localStorage` del navegador con la clave `trust-center-rut`. El JWT se mantiene en el `sessionStorage` de la pestaña actual para navegar entre las pantallas.
 
-## Referência oficial
+## Documentación oficial
 
-[Embedding the Trust Center on an existing webpage](https://developer.onetrust.com/onetrust/reference/embedding-the-trust-center-on-an-existing-webpage)
-# bupa_trust_center
-# bupa_trust_center
-# bupa_trust_center
+[Incorporar Trust Center en una página existente](https://developer.onetrust.com/onetrust/reference/embedding-the-trust-center-on-an-existing-webpage)
