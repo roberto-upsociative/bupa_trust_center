@@ -97,8 +97,6 @@
     window.OneTrust = {
       dataSubjectParams: { id: auth.id, isAnonymous: false, token: auth.token }
     };
-    await loadTrustCenterSdk(config.blobUrl);
-
     const trustCenter = document.createElement("trust-center");
     trustCenter.setAttribute("tenantId", config.tenantId);
     trustCenter.setAttribute("portalId", config.portalId);
@@ -107,6 +105,7 @@
     trustCenter.setAttribute("desktopMenuContainerId", "trust-center-menu");
     trustCenter.setAttribute("mobileMenuContainerId", "trust-center-menu");
     trustHost.append(trustCenter);
+    await loadTrustCenterSdk(config.blobUrl);
     trustStatus.textContent = "Trust Center listo.";
     trustStatus.dataset.kind = "success";
   }
