@@ -32,3 +32,4 @@ O RUT digitado é guardado no `localStorage` do navegador sob a chave `trust-cen
 [Embedding the Trust Center on an existing webpage](https://developer.onetrust.com/onetrust/reference/embedding-the-trust-center-on-an-existing-webpage)
 # bupa_trust_center
 # bupa_trust_center
+# bupa_trust_center
