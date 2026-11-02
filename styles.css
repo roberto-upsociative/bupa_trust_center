@@ -9,6 +9,7 @@ body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 50% 
 .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; color: white; background: #244bb8; border-radius: 11px; font-size: 18px; }
 .environment { border: 1px solid #cbd8f3; color: #3355a2; border-radius: 999px; padding: 7px 11px; font-size: 10px; letter-spacing: 1px; font-weight: 700; }
 .card { width: min(100%, 620px); margin: 62px auto 48px; padding: 48px; background: #fff; border: 1px solid #e7ebf2; border-radius: 18px; box-shadow: 0 16px 50px #1c33520d; }
+.card--trust-open { width: min(100%, 1080px); }
 .eyebrow { color: #5571ae; font-size: 10px; line-height: 1.4; letter-spacing: 1.5px; font-weight: 700; }
 h1, h2 { margin: 12px 0 0; font-family: Manrope, sans-serif; letter-spacing: -1.2px; color: #17243a; }
 h1 { max-width: 480px; font-size: clamp(27px, 4vw, 35px); line-height: 1.2; }
@@ -26,7 +27,8 @@ input:focus { border-color: #5477d0; box-shadow: 0 0 0 3px #5477d01a; }
 .status[data-kind="success"] { color: #23724e; }
 .trust-section { margin-top: 32px; padding-top: 28px; border-top: 1px solid #edf0f5; }
 .trust-section[hidden] { display: none; }
-#trust-center-host { margin-top: 20px; min-height: 120px; }
+#trust-center-host { width: 100%; min-width: 0; margin-top: 20px; min-height: 120px; overflow-x: auto; }
+#trust-center-host trust-center { display: block; width: 100%; min-width: 0; }
 .privacy-note { margin: 27px 0 0; padding-top: 18px; border-top: 1px solid #edf0f5; color: #8992a2; font-size: 11px; line-height: 1.5; }
 footer { margin-top: auto; padding: 0 0 28px; text-align: center; color: #99a2b1; font-size: 11px; }
-@media (max-width: 600px) { .shell { width: min(100% - 28px, 1080px); } .topbar { height: 70px; } .card { margin: 36px auto; padding: 30px 24px; border-radius: 14px; } }
+@media (max-width: 600px) { .shell { width: min(100% - 28px, 1080px); } .topbar { height: 70px; } .card { margin: 36px auto; padding: 30px 24px; border-radius: 14px; } .card--trust-open { padding: 26px 16px; } }

@@ -5,6 +5,7 @@
   const status = document.querySelector("#status");
   const section = document.querySelector("#trust-section");
   const host = document.querySelector("#trust-center-host");
+  const card = section.closest(".card");
   const storageKey = "trust-center-rut";
 
   rutInput.value = localStorage.getItem(storageKey) || "";
@@ -50,6 +51,7 @@
 
     localStorage.setItem(storageKey, rut);
     section.hidden = true;
+    card.classList.remove("card--trust-open");
     host.replaceChildren();
 
     const missing = missingConfiguration();
@@ -85,6 +87,7 @@
       trustCenter.setAttribute("workerUrl", config.workerUrl || "https://portal-api.onetrust.com");
       host.append(trustCenter);
       section.hidden = false;
+      card.classList.add("card--trust-open");
       showStatus("Trust Center carregado.", "success");
     } catch (error) {
       showStatus(error.message || "Não foi possível acessar o Trust Center.", "error");
