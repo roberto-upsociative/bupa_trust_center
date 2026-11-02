@@ -104,8 +104,8 @@
     trustCenter.setAttribute("portalId", config.portalId);
     trustCenter.setAttribute("blobUrl", config.blobUrl);
     trustCenter.setAttribute("workerUrl", config.workerUrl || "https://portal-api.onetrust.com");
-    trustCenter.setAttribute("desktopMenuContainerId", "trust-center-desktop-menu");
-    trustCenter.setAttribute("mobileMenuContainerId", "trust-center-mobile-menu");
+    trustCenter.setAttribute("desktopMenuContainerId", "trust-center-menu");
+    trustCenter.setAttribute("mobileMenuContainerId", "trust-center-menu");
     trustHost.append(trustCenter);
     trustStatus.textContent = "Trust Center listo.";
     trustStatus.dataset.kind = "success";

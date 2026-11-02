@@ -50,7 +50,6 @@ footer { margin-top: auto; padding: 0 0 28px; text-align: center; color: #99a2b1
 .trust-panel #trust-status { margin-top: 12px; }
 .trust-portal-layout { display: grid; grid-template-columns: minmax(190px, 240px) minmax(0, 1fr); gap: 24px; align-items: start; margin-top: 18px; }
 .trust-menu { min-width: 0; }
-.trust-menu-mobile { display: none; }
 .trust-portal-content { min-width: 0; }
 .trust-panel #trust-center-host { min-height: max(70vh, 600px); margin-top: 0; }
 @media (max-width: 700px) {
@@ -59,7 +58,5 @@ footer { margin-top: auto; padding: 0 0 28px; text-align: center; color: #99a2b1
   .trust-panel { padding: 20px 14px; border-radius: 12px; }
   .trust-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
   .trust-portal-layout { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 12px; }
-  .trust-menu-desktop { display: none; }
-  .trust-menu-mobile { display: block; }
   .trust-panel #trust-center-host { min-height: 70vh; }
 }
